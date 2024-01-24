@@ -1,1 +1,2 @@
-print("This is my first project project in python on PyCharm")
+chechu = "Hola"
+print(chechu)
