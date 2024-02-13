@@ -12,6 +12,6 @@ def seq_read_fasta(filename):
     return dna_sequence
 
 
-filename = "Amphiprion_ocellaris_U5_sequence.txt"
+filename = "U5.txt"
 dna_sequence = seq_read_fasta(filename)
 print(dna_sequence)
