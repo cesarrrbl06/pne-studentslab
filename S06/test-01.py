@@ -1,12 +1,60 @@
-from Seq0 import *
+class Seq:
+        """A class for representing sequences"""
 
-seq1 = "ATTCCCGGGG"
+        def __init__(self, strbases):
+            # Initialize the sequence with the value
+            # passed as argument when creating the object
+            self.strbases = strbases
+            print("New sequence created!")
 
-print(f"Seq:    {seq1}")
-print(f"  Rev : {seq_reverse(seq1)}")
-print(f"  Comp: {seq_complement(seq1)}")
-print(f"  Length: {seq_len(seq1)}")
-print(f"    A: {seq_count_base(seq1, 'A')}")
-print(f"    T: {seq_count_base(seq1, 'T')}")
-print(f"    C: {seq_count_base(seq1, 'C')}")
-print(f"    G: {seq_count_base(seq1, 'G')}")
+        def __str__(self):
+            """Method called when the object is being printed"""
+            # -- We just return the string with the sequence
+            return self.strbases
+
+        def len(self):
+            """Calculate the length of the sequence"""
+            return len(self.strbases)
+
+
+
+
+
+
+class Gene(Seq):
+    """This class is derived from the Seq Class
+       All the objects of class Gene will inherit
+       the methods from the Seq class
+    """
+    def __init__(self, strbases, name=""):
+
+        # -- Call first the Seq initializer and then the
+        # -- Gene init method
+        super().__init__(strbases)
+        self.name = name
+        print("New gene created!")
+
+    def __str__(self):
+        """Print the Gene name along with the sequence"""
+        return self.name + "-" + self.strbases
+
+
+
+# --- Main program
+s1 = Seq("AGTACACTGGT")
+g = Gene("CGTAAC", "FRAT1")
+
+# -- Printing the objects
+print(f"Sequence 1: {s1}")
+print(f"Gene: {g}")
+
+
+
+import termcolor
+
+termcolor.cprint("Hey! this is printed in cyan!", 'cyan')
+
+
+
+
+
