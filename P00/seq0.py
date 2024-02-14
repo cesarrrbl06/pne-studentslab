@@ -17,6 +17,10 @@ dna_sequence = seq_read_fasta(filename)
 print(dna_sequence)
 
 def seq_len(seq):
-    len(filename)
+    return len(seq)
+
+def seq_count_base(seq, base):
+    return seq.count(base)
+
 
 
