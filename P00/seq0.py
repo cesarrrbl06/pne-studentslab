@@ -23,4 +23,12 @@ def seq_count_base(seq, base):
     return seq.count(base)
 
 
+def seq_count_bases(seq):
+    bases = ['A', 'T', 'C', 'G']
+    base_counts = {base: seq.count(base) for base in bases}
+    return base_counts
+
+
+
+
 
