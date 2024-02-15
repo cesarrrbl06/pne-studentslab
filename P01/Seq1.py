@@ -20,12 +20,13 @@ class Seq:
     def __str__(self):
         """Method called when the object is being printed"""
         # We return the string with the sequence
-        return f"(Length: {self.len()}) {self.strbases}" if self.strbases else "NULL"
-
-    # Esto no tiene que hacer print, aquí se crean las clases y se importan haciendo un sources root a los sucesivos ejercicios.
+        length = self.len()
+        return f"(Length: {length}) {self.strbases}" if length is not None else self.strbases
 
     def len(self):
         """Calculate the length of the sequence"""
+        if self.strbases in ["NULL", "ERROR"]:
+            return None
         return len(self.strbases)
 
 # self es una forma de acceder a las variables y métodos de la instancia de la clase desde dentro de la propia clase.
