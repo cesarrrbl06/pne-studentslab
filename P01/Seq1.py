@@ -29,4 +29,6 @@ class Seq:
             return None
         return len(self.strbases)
 
+
+
 # self es una forma de acceder a las variables y métodos de la instancia de la clase desde dentro de la propia clase.
