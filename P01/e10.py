@@ -25,7 +25,7 @@ class MySeq(Seq):
         return max(self.bases_count, key=self.bases_count.get)
 
 
-genes = ["U5", "ADA", "FRAT1", "FXN"]
+genes = ["U5", "ADA", "FRAT1", "FXN", "RNU6_269P"]
 print("-----| Practice 1, Exercise 10 |------")
 for gene in genes:
     seq = MySeq(f"{gene}.txt")
