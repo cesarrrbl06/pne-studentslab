@@ -12,7 +12,7 @@ number_con = 0
 serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 try:
     serversocket.bind((IP, PORT))
-    # become a server socket
+    # become a server socketa
     # MAX_OPEN_REQUESTS connect requests before refusing outside connections
     serversocket.listen(MAX_OPEN_REQUESTS)
 
