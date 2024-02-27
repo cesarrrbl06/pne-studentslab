@@ -16,7 +16,7 @@ s.connect((IP, PORT))
 
 # Send data. No strings can be sent, only bytes
 # It necesary to encode the string into bytes
-s.send(str.encode(""))
+s.send(str.encode("a"))
 
 # Close the socket
 s.close()
