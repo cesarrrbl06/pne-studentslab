@@ -1,0 +1,2 @@
+Mobile,Wifi(Eduroam), 27/2/24, URJC Fuenlabrada, 10.1.156.28
+PC, Cable(Eduroam)  , 28/2/24, URJC Fuenlabrada,212.128.255.93
