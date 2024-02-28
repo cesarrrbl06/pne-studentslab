@@ -2,25 +2,35 @@ import socket
 
 # SERVER IP, PORT
 PORT = 8081
-IP = "192.168.124.179" # depends on the computer the server is running
+IP = "212.128.255.93"  # depends on the computer the server is running
 
 while True:
     # First, create the socket
-    # We will always use these parameters: AF_INET y SOCK_STREAM
+    # We will always use these parameters: AF_INET and SOCK_STREAM
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-    # establish the connection to the Server (IP, PORT)
-    s.connect((IP, PORT))
+    try:
+        # establish the connection to the Server (IP, PORT)
+        s.connect((IP, PORT))
 
-    # Send data. No strings can be sent, only bytes
-    # It necessary to encode the string into bytes
-    s.send(str.encode("HELLO FROM THE CLIENT!!!"))
+        # Ask the user to enter a message
+        message = input("Enter your message: ")
 
-    # Receive data from the server
-    msg = s.recv(2048)
-    print("MESSAGE FROM THE SERVER:\n")
-    print(msg.decode("utf-8"))
+        # Send data. No strings can be sent, only bytes
+        # It's necessary to encode the string into bytes
+        s.send(str.encode(message))
 
-# Closing the socket
+        # Receive data from the server
+        msg = s.recv(2048)
+        print("MESSAGE FROM THE SERVER:\n")
+        print(msg.decode("utf-8"))
+
+    except Exception as e:
+        print("An error occurred:", e)
+
+    # Closing the socket after receiving the response
     s.close()
+
+
+
 
