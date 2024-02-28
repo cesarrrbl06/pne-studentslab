@@ -1,7 +1,8 @@
+
 from Client0 import *
 
 PRACTICE = 2
-EXERCISE = 1
+EXERCISE = 2
 
 print(f"-----| Practice {PRACTICE}, Exercise {EXERCISE} |------")
 
@@ -13,5 +14,4 @@ PORT = 8081
 c = Client(IP, PORT)
 
 # -- Test the ping method
-c.ping()
-
+print(c)

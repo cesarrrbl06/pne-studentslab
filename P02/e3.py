@@ -1,17 +1,22 @@
 from Client0 import *
 
 PRACTICE = 2
-EXERCISE = 1
+EXERCISE = 2
 
 print(f"-----| Practice {PRACTICE}, Exercise {EXERCISE} |------")
 
 # -- Parameters of the server to talk to
-IP = "212.128.255.93" # your IP address
+IP = "212.128.255.64" # your IP address
 PORT = 8081
 
 # -- Create a client object
 c = Client(IP, PORT)
 
 # -- Test the ping method
-c.ping()
+print(c)
+
+
+print("Sending a message to the server...")
+response = c.talk("Pokerface")
+print(f"Response: {response}")
 
