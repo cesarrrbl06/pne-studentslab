@@ -4,7 +4,7 @@ class Seq:
     def __init__(self, strbases):
         # Check if the sequence is null right at the beginning
         if strbases == "":
-            print("NULL sequence created")
+            print("NULL sequence created!")
             self.strbases = "NULL"
             return
 

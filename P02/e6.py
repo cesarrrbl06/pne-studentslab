@@ -3,15 +3,15 @@ from Client0 import Client
 
 
 PRACTICE = 2
-EXERCISE = 5
+EXERCISE = 6
 
 print(f"-----| Practice {PRACTICE}, Exercise {EXERCISE} |------")
 
 # -- Parameters of the server to talk to
-IP1 = "192.168.1.36"  # your IP address
+IP1 = "212.128.255.7"  # your IP address
 PORT1 = 8080
 
-IP2 = "192.168.1.36"
+IP2 = "212.128.255.7"
 PORT2 = 8081
 
 # -- Create a client object
