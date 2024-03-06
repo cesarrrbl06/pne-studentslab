@@ -22,7 +22,7 @@ class SeqServer:
                 msg = client_socket.recv(2048).decode("utf-8")
                 print("Message from client: {}".format(msg))
 
-                message = "Hello from the Cesar server\n"
+                message = self.return_response(str(msg))
                 send_bytes = str.encode(message)
                 client_socket.send(send_bytes)
                 client_socket.close()
@@ -35,6 +35,25 @@ class SeqServer:
             print("Server stopped by the user")
             self.server_socket.close()
 
+    def ping_response(self):
+        print("Print command!")
+        return "OK"
+
+    def get_response(self):
+
+
+
+    def return_response(self, msg):
+        if msg.startswith("PING"):
+            print("PING")
+            return self.ping_response()
+        if msg.startswith("GET"):
+            print("GET")
+            return self.get_response()
+
 
 server = SeqServer()
 server.start_server()
+
+
+
