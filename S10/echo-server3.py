@@ -3,7 +3,7 @@ import termcolor
 
 # Configure the Server's IP and PORT
 PORT = 8081
-IP = "212.128.255.93"  # this IP address is local, so only requests from the same machine are possible
+IP = "212.128.255.101"  # this IP address is local, so only requests from the same machine are possible
 
 number_con = 0
 
