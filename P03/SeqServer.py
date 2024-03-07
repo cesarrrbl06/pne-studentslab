@@ -1,12 +1,15 @@
 import socket
+import termcolor
 
 
 class SeqServer:
     def __init__(self):
-        self.PORT = 8081
+        self.PORT = 8080
         self.IP = "127.0.0.1"
         self.MAX_OPEN_REQUESTS = 5
         self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.sequences = ["ATCGTACGATCGATCG", "CGATACGATGCTAGCT", "TCGATCGATCGTAGCT", "GCTAGCTAGCATCGAT",
+                          "ATCGATCGTAGCTAGC"]
 
     def start_server(self):
         try:
@@ -39,21 +42,44 @@ class SeqServer:
         print("Print command!")
         return "OK"
 
-    def get_response(self):
+    def get_response(self, index):
+        if 0 <= index < len(self.sequences):
+            sequence = self.sequences[index]
+            print("Sequence returned: {}".format(sequence))  # Print sequence to server terminal
+            return sequence
+        else:
+            return "Invalid index. Please provide a number between 0 and 4."
 
+    def info_response(self, sequence):
+        base_counts = {'A': 0, 'T': 0, 'C': 0, 'G': 0}
+        total_bases = len(sequence)
+        for base in sequence:
+            if base in base_counts:
+                base_counts[base] += 1
+        percentages = {base: f"{round((count / total_bases) * 100, 2)}%" for base, count in base_counts.items()}
+        print("Total length:", len(sequence))
+        print("Base Counts:", base_counts)
+        print("Base percentages:", percentages)
+        return base_counts, percentages, total_bases
+    def comp_response(self,sequence):
 
 
     def return_response(self, msg):
         if msg.startswith("PING"):
             print("PING")
-            return self.ping_response()
-        if msg.startswith("GET"):
-            print("GET")
-            return self.get_response()
+            return self.ping_response(), None, None, None
+        elif msg.startswith("GET"):
+            termcolor.cprint("GET", "green")
+            index = int(msg.split()[1])  # Extract the index from the message
+            return self.get_response(index), None, None, None
+        elif msg.startswith("INFO"):
+            termcolor.cprint("INFO", "green")
+            sequence = msg.split()[1]
+            base_counts, percentages, length = self.info_response(sequence)
+            percentages_str = "Base percentages: None" if percentages is None else "\n".join(
+                [f"{base}: {percentage}%" for base, percentage in percentages.items()])
+            return f"Total length: {length}\nBase Counts: {base_counts}\n{percentages_str}"
 
 
 server = SeqServer()
 server.start_server()
-
-
-
