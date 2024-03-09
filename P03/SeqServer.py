@@ -1,5 +1,6 @@
 import socket
 import termcolor
+from P01.e8 import MySeq
 
 
 class SeqServer:
@@ -61,7 +62,14 @@ class SeqServer:
         print("Base Counts:", base_counts)
         print("Base percentages:", percentages)
         return base_counts, percentages, total_bases
-    def comp_response(self,sequence):
+
+    def complementary(self, sequences):
+        if self.sequences in ["NULL", "ERROR"]:
+            return self.sequences
+        else:
+            complement_dict = {'A': 'T', 'T': 'A', 'C': 'G', 'G': 'C'}
+            return ''.join([complement_dict[base] for base in self.sequences])
+
 
 
     def return_response(self, msg):
