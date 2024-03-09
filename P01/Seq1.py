@@ -1,33 +1,45 @@
+from pathlib import Path
+
 class Seq:
     """A class for representing sequences"""
 
-    def __init__(self, strbases):
-        # Check if the sequence is null right at the beginning
-        if strbases == "":
+    def __init__(self, filename=None, strbases=None):
+        if filename:
+            strbases = self.seq_read_fasta(filename)
+        if strbases is None:
             print("NULL sequence created!")
             self.strbases = "NULL"
-            return
-
-        if not all(base in "ACGT" for base in strbases):
+        elif not all(base in "ACGT" for base in strbases):
             print("Invalid sequence created!")
             self.strbases = "ERROR"
-            return
+        else:
+            self.strbases = strbases
+            self.count_bases()
 
-        # If the sequence is not null, assign the value to self.strbases
-        self.strbases = strbases
-        print("New sequence created!")
+    def seq_read_fasta(self, filename):
+        file_contents = Path(filename).read_text()
+        list_contents = file_contents.split('\n')
+        dna_sequence = ''.join(list_contents[1:])  # Join all lines except the header
+        return dna_sequence
+
+    def count_bases(self):
+        if self.strbases not in ["NULL", "ERROR"]:
+            bases = ['A', 'C', 'T', 'G']
+            self.bases_count = {base: self.strbases.count(base) for base in bases}
+
+    def most_frequent_base(self):
+        if self.strbases not in ["NULL", "ERROR"]:
+            return max(self.bases_count, key=self.bases_count.get)
 
     def __str__(self):
-        """Method called when the object is being printed"""
-        # We return the string with the sequence
         length = self.len()
         return f"(Length: {length}) {self.strbases}" if length is not None else self.strbases
 
     def len(self):
-        """Calculate the length of the sequence"""
         if self.strbases in ["NULL", "ERROR"]:
             return None
         return len(self.strbases)
+
 
 
 

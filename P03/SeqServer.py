@@ -1,6 +1,6 @@
 import socket
 import termcolor
-from P01.e8 import MySeq
+from Seq1 import Seq
 
 
 class SeqServer:
@@ -63,23 +63,36 @@ class SeqServer:
         print("Base percentages:", percentages)
         return base_counts, percentages, total_bases
 
-    def complementary(self, sequences):
-        if self.sequences in ["NULL", "ERROR"]:
-            return self.sequences
+    def complementary(self, sequence):
+        if sequence in ["NULL", "ERROR"]:
+            return "Sequence empty or not valid"
         else:
             complement_dict = {'A': 'T', 'T': 'A', 'C': 'G', 'G': 'C'}
-            return ''.join([complement_dict[base] for base in self.sequences])
+            complementary_sequence = ''.join([complement_dict[base] for base in sequence])
+            return complementary_sequence
 
+    def reverse(self, sequence):
+        if sequence in ["NULL", "ERROR"]:
+            return "Sequence empty or not valid"
+        else:
+            return sequence[::-1]
 
+    def gene(self, gene_name=None):
+        genes = ["U5", "ADA", "FRAT1", "FXN", "RNU6_269P"]
+        for gene in genes:
+            if gene_name is None or gene_name == gene:
+                seq = Seq(f"{gene}.txt")
+                if seq.strbases != "NULL":
+                    return f"Gene {gene}: {seq}"
 
     def return_response(self, msg):
         if msg.startswith("PING"):
             print("PING")
-            return self.ping_response(), None, None, None
+            return self.ping_response()
         elif msg.startswith("GET"):
             termcolor.cprint("GET", "green")
-            index = int(msg.split()[1])  # Extract the index from the message
-            return self.get_response(index), None, None, None
+            sequence = msg.split()[1]
+            return self.get_response(int(sequence))
         elif msg.startswith("INFO"):
             termcolor.cprint("INFO", "green")
             sequence = msg.split()[1]
@@ -87,6 +100,33 @@ class SeqServer:
             percentages_str = "Base percentages: None" if percentages is None else "\n".join(
                 [f"{base}: {percentage}%" for base, percentage in percentages.items()])
             return f"Total length: {length}\nBase Counts: {base_counts}\n{percentages_str}"
+        elif msg.startswith("COMP"):
+            termcolor.cprint("COMP", "green")
+            sequence = msg.split()[1]
+            comp_seq = self.complementary(sequence)
+            return comp_seq
+        elif msg.startswith("REV"):
+            termcolor.cprint("REV", "green")
+            sequence = msg.split()[1]
+            rev_seq = self.reverse(sequence)
+            return rev_seq
+        elif msg.startswith("GENE U5"):
+            termcolor.cprint("GENE", "yellow")
+            return self.gene("U5")
+        elif msg.startswith("GENE FRAT1"):
+            termcolor.cprint("GENE", "yellow")
+            return self.gene("FRAT1")
+        elif msg.startswith("GENE FXN"):
+            termcolor.cprint("GENE", "yellow")
+            return self.gene("FXN")
+        elif msg.startswith("GENE RNU6_269P"):
+            termcolor.cprint("GENE", "yellow")
+            return self.gene("RNU_269P")
+        elif msg.startswith("GENE ADA"):
+            termcolor.cprint("GENE", "yellow")
+            return self.gene("ADA")
+        else:
+            return "Command not recognized."
 
 
 server = SeqServer()
