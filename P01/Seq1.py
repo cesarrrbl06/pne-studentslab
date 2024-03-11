@@ -40,7 +40,7 @@ class Seq:
             return None
         return len(self.strbases)
 
-
-
+    def GET(self, service_name):
+        return f"GET {self} {service_name}"
 
 # self es una forma de acceder a las variables y métodos de la instancia de la clase desde dentro de la propia clase.
