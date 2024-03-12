@@ -1,4 +1,4 @@
-from Seq1 import Seq
+from Seq1 import *
 
 print("-----| Practice 1, Exercise 6 |------")
 seq1 = Seq("")

@@ -1,5 +1,5 @@
-from Seq1 import Seq
-from pathlib import Path
+from Seq1 import *
+
 
 genes = ["U5", "ADA", "FRAT1", "FXN", "RNU6_269P"]
 for gene in genes:

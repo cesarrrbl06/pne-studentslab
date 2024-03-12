@@ -1,46 +1,9 @@
-from Seq1 import Seq
-
-class MySeq(Seq):
-    def __init__(self, strbases):
-        self.strbases = strbases  # Do not call Seq's __init__ method
-        if not all(base in 'ACTG' for base in strbases):
-            print("INVALID sequence!")
-            self.strbases = "ERROR"
-        elif len(strbases) == 0:
-            print("NULL sequence created")
-            self.strbases = "NULL"
-        else:
-            print("New sequence created!")
-        self.count_bases()
-
-    def count_bases(self):
-        bases = ['A', 'C', 'T', 'G']
-        self.bases_count = {base: self.strbases.count(base) for base in bases}
-
-    def reverse(self):
-        if self.strbases in ["NULL", "ERROR"]:
-            return self.strbases
-        else:
-            return self.strbases[::-1]
-
-    def complementary(self):
-        if self.strbases in ["NULL", "ERROR"]:
-            return self.strbases
-        else:
-            complement_dict = {'A': 'T', 'T': 'A', 'C': 'G', 'G': 'C'}
-            return ''.join([complement_dict[base] for base in self.strbases])
-
-
-    def __str__(self):
-        return self.strbases
-
-    def len(self):
-        return len(self.strbases)
+from Seq1 import *
 
 print("-----| Practice 1, Exercise 7 |------")
-seq1 = MySeq("")
-seq2 = MySeq("ACTGA")
-seq3 = MySeq("TATXC")
+seq1 = Seq("")
+seq2 = Seq("ACTGA")
+seq3 = Seq("TATXC")
 
 for i, seq in enumerate([seq1, seq2, seq3], 1):
     print(f"Sequence {i}: (Length: {seq.len()}) {seq}")
