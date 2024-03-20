@@ -1,5 +1,4 @@
 import socket
-import termcolor
 from pathlib import Path
 
 IP = "127.0.0.1"
@@ -11,8 +10,23 @@ def process_client(s):
     req = req_raw.decode()
     lines = req.split('\n')
     req_line = lines[0]
-    file_content = Path("./html/info/A.html").read_text()
-    body = file_content
+
+    if req_line.startswith("GET /info/A"):
+        file_content = Path("./html/info/A.html").read_text()
+        body = file_content
+    elif req_line.startswith("GET /info/C"):
+        file_content = Path("./html/info/C.html").read_text()
+        body = file_content
+    elif req_line.startswith("GET /info/G"):
+        file_content = Path("./html/info/G.html").read_text()
+        body = file_content
+    elif req_line.startswith("GET /info/T"):
+        file_content = Path("./html/info/T.html").read_text()
+        body = file_content
+    else:
+        file_content = Path("./html/info/error.html").read_text()
+        body = file_content
+
     status_line = "HTTP/1.1 200 OK\n"
     header = "Content-Type: text/html\n"
     header += f"Content-Length: {len(body)}\n"
@@ -25,7 +39,7 @@ ls.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 ls.bind((IP, PORT))
 ls.listen()
 
-print("Green server configured!")
+print("Server bases!")
 
 while True:
     print("Waiting for clients....")
