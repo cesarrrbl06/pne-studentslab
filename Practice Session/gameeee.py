@@ -1,6 +1,7 @@
 import socket
 import random
 
+
 class NumberGuesser:
     def __init__(self):
         self.IP = "127.0.0.1"
@@ -40,14 +41,13 @@ class NumberGuesser:
                 client_socket.close()
 
         except socket.error:
-            print("Problems using ip {} port {}. Is the IP correct? Do you have port permission?".format(self.IP, self.PORT))
+            print("Problems using ip {} port {}. Is the IP correct? Do you have port permission?".format(self.IP,
+                                                                                                         self.PORT))
 
         except KeyboardInterrupt:
             print("Game stopped by the user")
             self.server_socket.close()
 
 
-
 server = NumberGuesser()
 server.launch_game()
-
