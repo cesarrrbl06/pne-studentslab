@@ -10,15 +10,26 @@ def process_client(s):
     req = req_raw.decode()
     lines = req.split('\n')
     req_line = lines[0]
+    url = req_line.split(" ")[1]
 
-    if req_line.startswith("GET /info/A"):
+    if url == "/":
+        file_content = Path("./html/info/index.html").read_text()
+        body = file_content
+    elif url == "/info/A":
         file_content = Path("./html/info/A.html").read_text()
         body = file_content
-    elif:
+    elif url == "/info/C":
+        file_content = Path("./html/info/C.html").read_text()
+        body = file_content
+    elif url == "/info/G":
+        file_content = Path("./html/info/C.html").read_text()
+        body = file_content
+    elif url == "/info/T":
         file_content = Path("./html/info/C.html").read_text()
         body = file_content
     else:
-        body = ""
+        file_content = Path("./html/info/error.html").read_text()
+        body = file_content
 
     status_line = "HTTP/1.1 200 OK\n"
     header = "Content-Type: text/html\n"
