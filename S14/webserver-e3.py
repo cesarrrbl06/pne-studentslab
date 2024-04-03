@@ -36,6 +36,8 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
             contents = Path("./green.html").read_text()
         elif url == "/pink.html":
             contents = Path("./pink.html").read_text()
+        else:
+            contents = Path("./error.html")
 
         # Generating the response message
         self.send_response(200)  # -- Status line: OK!
