@@ -9,7 +9,6 @@ PORT = 8080
 # -- This is for preventing the error: "Port already in use"
 socketserver.TCPServer.allow_reuse_address = True
 
-
 # Class with our Handler. It is a called derived from BaseHTTPRequestHandler
 # It means that our class inherits all his methods and properties
 class TestHandler(http.server.BaseHTTPRequestHandler):
@@ -21,23 +20,22 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
         # Print the request line
         termcolor.cprint(self.requestline, 'green')
 
-        # IN this simple server version:
-        # We are NOT processing the client's request
-        # It is a happy server: It always returns a message saying
-        # that everything is ok
+        # Get the file name
         url = self.requestline.split(" ")[1]
 
-        # Message to send back to the client
+        # Default contents
+        contents = ""
+
         if url == "/":
             contents = Path("./index.html").read_text()
-        elif url == "/blue.html":
-            contents = Path("./blue.html").read_text()
-        elif url == "/green.html":
-            contents = Path("./green.html").read_text()
-        elif url == "/pink.html":
-            contents = Path("./pink.html").read_text()
         else:
-            contents = Path("./error.html")
+            filename = "." + url
+            try:
+
+                contents = Path(filename).read_text()
+            except FileNotFoundError:
+
+                contents = Path("./error.html").read_text()
 
         # Generating the response message
         self.send_response(200)  # -- Status line: OK!
@@ -73,3 +71,4 @@ with socketserver.TCPServer(("", PORT), Handler) as httpd:
         print("")
         print("Stopped by the user")
         httpd.server_close()
+
