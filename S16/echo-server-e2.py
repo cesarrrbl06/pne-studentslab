@@ -24,18 +24,24 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
         arguments = parse_qs(url_path.query)
 
         if path == "/":
-            filename = "form-e1.html"
+            filename = "form-e2.html"
             contents = read_html_file(filename).render(context={})
         elif path == "/echo":
-            filename = "echo.html"
-            if "msg" in arguments:
+            filename = "echo2.html"
+            if "msg" in arguments and "chk" not in arguments:
                 msg = arguments["msg"][0]
                 contents = read_html_file(filename).render(context={"todisplay": msg})
+            elif "chk" and "msg" in arguments:
+                msg = arguments["msg"][0].upper()
+                contents = read_html_file(filename).render(context={"todisplay": msg})  #Hago mayusculas todo si pongo upper aqui
+
             else:
                 contents = read_html_file(filename).render(context={"todisplay": ""})
         else:
             filename = "error.html"
             contents = read_html_file(filename).render(context={})
+
+        print(arguments)
 
         self.send_response(200)
         self.send_header('Content-Type', 'html')
@@ -55,3 +61,5 @@ with socketserver.TCPServer(("", PORT), Handler) as httpd:
         print("")
         print("Stopped by the user")
         httpd.server_close()
+
+

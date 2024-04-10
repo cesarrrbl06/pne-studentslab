@@ -24,18 +24,16 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
         arguments = parse_qs(url_path.query)
 
         if path == "/":
-            filename = "form-e1.html"
+            filename = "index.html"
             contents = read_html_file(filename).render(context={})
-        elif path == "/echo":
-            filename = "echo.html"
-            if "msg" in arguments:
-                msg = arguments["msg"][0]
-                contents = read_html_file(filename).render(context={"todisplay": msg})
-            else:
-                contents = read_html_file(filename).render(context={"todisplay": ""})
+        elif path == "/ping":
+            filename = "ping.html"
+            contents = read_html_file(filename).render(context={})
         else:
             filename = "error.html"
             contents = read_html_file(filename).render(context={})
+
+        print(arguments)
 
         self.send_response(200)
         self.send_header('Content-Type', 'html')
