@@ -1,7 +1,8 @@
+
 from pathlib import Path
-
-
 class Seq:
+
+
     """A class for representing sequences"""
 
     def __init__(self, filename=None, strbases=None):
@@ -32,6 +33,13 @@ class Seq:
         if self.strbases not in ["NULL", "ERROR"]:
             return max(self.bases_count, key=self.bases_count.get)
 
+    def seq_reverse(self):
+        return self.strbases[::-1]
+
+    def seq_complement(self):
+        complement = {'A': 'T', 'T': 'A', 'C': 'G', 'G': 'C'}
+        return ''.join([complement[base] for base in self.strbases])
+
     def __str__(self):
         length = self.len()
         return f"(Length: {length}) {self.strbases}" if length is not None else self.strbases
@@ -40,6 +48,7 @@ class Seq:
         if self.strbases in ["NULL", "ERROR"]:
             return None
         return len(self.strbases)
+
 
     def GET(self, service_name):
         return f"GET {self} {service_name}"
