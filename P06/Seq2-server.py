@@ -29,11 +29,14 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
         elif path == "/ping":
             filename = "ping.html"
             contents = read_html_file(filename).render(context={})
+        elif path == "/get":
+            filename = "get.html"
+            contents = read_html_file(filename).render(context={})
         else:
             filename = "error.html"
             contents = read_html_file(filename).render(context={})
 
-        print(arguments)
+
 
         self.send_response(200)
         self.send_header('Content-Type', 'html')
