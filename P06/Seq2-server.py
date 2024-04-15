@@ -63,7 +63,9 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                 if name in genes:
                     seq = seq_read_fasta(f"{name}.txt")
                     contents = read_html_file(filename).render(context={"todisplay": seq, "gene_name": name})
-
+                else:
+                    filename = "error.html"
+                    contents = read_html_file(filename).render(context={})
         else:
             filename = "error.html"
             contents = read_html_file(filename).render(context={})
