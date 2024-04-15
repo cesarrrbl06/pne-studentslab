@@ -15,6 +15,15 @@ def read_html_file(filename):
     return contents
 
 
+sequences = {
+    "0": 'ATCGATCGATCGATC',
+    "1": 'TACGTACGTACGTAC',
+    "2": 'GCTAGCTAGCTAGCT',
+    "3": 'CATGCATGCATGCAT',
+    "4": 'AGCTAGCTAGCTAGC'
+}
+
+
 class TestHandler(http.server.BaseHTTPRequestHandler):
 
     def do_GET(self):
@@ -31,12 +40,20 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
             contents = read_html_file(filename).render(context={})
         elif path == "/get":
             filename = "get.html"
-            contents = read_html_file(filename).render(context={})
+            if "n" in arguments:
+                n = arguments["n"][-1]
+                sequence = sequences.get(n)
+                if sequence is not None:
+                    contents = read_html_file(filename).render(context={"todisplay": sequence, "sequence_number": n})
+                else:
+                    filename = "error.html"
+                    contents = read_html_file(filename).render(context={})
+
         else:
             filename = "error.html"
             contents = read_html_file(filename).render(context={})
 
-
+        print(arguments)
 
         self.send_response(200)
         self.send_header('Content-Type', 'html')
