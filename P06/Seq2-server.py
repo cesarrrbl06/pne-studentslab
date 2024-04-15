@@ -71,8 +71,6 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
             if "msg" and "info" in arguments:
                 msg = arguments["msg"][0]
                 contents = read_html_file(filename).render(context={"todisplay": msg,})
-
-
         else:
             filename = "error.html"
             contents = read_html_file(filename).render(context={})
