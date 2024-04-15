@@ -2,15 +2,27 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <title>PING</title>
+    <title>Index</title>
   </head>
   <body>
   <h1>SEQ2 Server</h1>
-    <form action="echo" method="get">
+  <p>Access to the server</p>
+    <form action="ping" method="get">
         <hr>
-      Access to the server:
+      Is the server alive?
       <input type="submit" value="PING">
-      <hr>
+    </form>
+  <hr>
+     <form action="get" method="get">
+      Get a sequence:
+      <select name="n">
+        <option value="0">0</option>
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+      </select>
+      <input type="submit" value="GET">
     </form>
   </body>
 </html>
