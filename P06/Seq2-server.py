@@ -1,9 +1,9 @@
 import http.server
 import socketserver
 import termcolor
-from pathlib import Path
 from urllib.parse import parse_qs, urlparse
 import jinja2 as j
+from Seq1 import *
 
 PORT = 8080
 socketserver.TCPServer.allow_reuse_address = True
@@ -14,6 +14,12 @@ def read_html_file(filename):
     contents = j.Template(contents)
     return contents
 
+def seq_read_fasta(filename):
+    file_contents = Path(filename).read_text()
+    list_contents = file_contents.split('\n')
+    dna_sequence = ''.join(list_contents[1:])  # Join all lines except the header
+    return dna_sequence
+
 
 sequences = {
     "0": 'ATCGATCGATCGATC',
@@ -21,7 +27,9 @@ sequences = {
     "2": 'GCTAGCTAGCTAGCT',
     "3": 'CATGCATGCATGCAT',
     "4": 'AGCTAGCTAGCTAGC'
-}
+    }
+
+genes = ["U5", "ADA", "FRAT1", "FXN", "RNU6_269P"]
 
 
 class TestHandler(http.server.BaseHTTPRequestHandler):
@@ -48,6 +56,13 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                 else:
                     filename = "error.html"
                     contents = read_html_file(filename).render(context={})
+        elif path == "/gene":
+            filename = "gene.html"
+            if "name" in arguments:
+                name = arguments["name"][-1]
+                if name in genes:
+                    seq = seq_read_fasta(f"{name}.txt")
+                    contents = read_html_file(filename).render(context={"todisplay": seq, "gene_name": name})
 
         else:
             filename = "error.html"
