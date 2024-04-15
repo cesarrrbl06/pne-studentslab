@@ -66,6 +66,13 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                 else:
                     filename = "error.html"
                     contents = read_html_file(filename).render(context={})
+        elif path == "/operation":
+            filename = "operation.html"
+            if "msg" and "info" in arguments:
+                msg = arguments["msg"][0]
+                contents = read_html_file(filename).render(context={"todisplay": msg,})
+
+
         else:
             filename = "error.html"
             contents = read_html_file(filename).render(context={})
