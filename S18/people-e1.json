@@ -1,0 +1,29 @@
+[
+    {
+        "Firstname": "Person1",
+        "Lastname": "One",
+        "age": 25,
+        "phoneNumber": [
+            {"number": "1111", "type": "home"},
+            {"number": "2222", "type" : "office"}
+        ]
+    },
+    {
+        "Firstname": "Person2",
+        "Lastname": "Two",
+        "age": 30,
+        "phoneNumber": [
+            {"number": "3333", "type": "home"},
+            {"number": "4444", "type" : "office"}
+        ]
+    },
+    {
+        "Firstname": "Person3",
+        "Lastname": "Three",
+        "age": 35,
+        "phoneNumber": [
+            {"number": "5555", "type": "home"},
+            {"number": "6666", "type" : "office"}
+        ]
+    }
+]
