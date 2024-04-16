@@ -3,7 +3,6 @@ import termcolor
 from Seq1 import Seq
 
 
-
 class SeqServer:
     def __init__(self):
         self.PORT = 8080

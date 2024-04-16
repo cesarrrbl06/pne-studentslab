@@ -12,6 +12,7 @@ def seq_read_fasta(filename):
     return dna_sequence
 
 
+genes = ["U5", "ADA", "FRAT1", "FXN", "RNU_269P"]
 
 
 def seq_len(seq):
