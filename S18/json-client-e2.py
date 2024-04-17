@@ -35,9 +35,10 @@ data1 = r1.read().decode("utf-8")
 people = json.loads(data1)
 
 print("CONTENT: ")
-
+print("Total  number of people :" , len(people))
 # Iterate over each person
 for person in people:
+
     # Print the information on the console, in colors
     print()
     termcolor.cprint("Name: ", 'green', end="")
