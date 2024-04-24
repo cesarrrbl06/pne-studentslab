@@ -25,7 +25,8 @@ if response.status == 200:
     if data:  # Check if data is not empty
         json_data = json.loads(data)
         if json_data.get('ping') == 1:
-            print("The server is up!")
+            print("Response received!: 200 OK")
+            print("PING OK! The database is running!")
         else:
             print("The server is down!")
     else:
