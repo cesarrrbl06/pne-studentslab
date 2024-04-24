@@ -1,3 +1,4 @@
+import termcolor
 
 genes = {
     "FRAT1": "ENSG00000165879",
@@ -10,7 +11,10 @@ genes = {
     "FGFR3": "ENSG00000068078",
     "KDR": "ENSG00000128052",
     "ANK2": "ENSG00000145362"
-
 }
 
-for gene in genes :
+for gene, ensembl_id in genes.items():
+    termcolor.cprint(f"{gene} : ", "green" ,end="")
+    print(f"{ensembl_id}")
+
+
