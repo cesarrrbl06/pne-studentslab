@@ -14,7 +14,5 @@ genes = {
 }
 
 for gene, ensembl_id in genes.items():
-    termcolor.cprint(f"{gene} : ", "green" ,end="")
+    termcolor.cprint(f"{gene} : ", "green", end="")
     print(f"{ensembl_id}")
-
-
