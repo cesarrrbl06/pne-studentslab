@@ -2,9 +2,9 @@ import http.server
 import socketserver
 from urllib.parse import parse_qs, urlparse
 import jinja2 as j
-from Seq1 import *
 import termcolor
 import requests
+from pathlib import Path
 
 PORT = 8080
 socketserver.TCPServer.allow_reuse_address = True
@@ -20,13 +20,13 @@ def list_species(limit=None):
     response = requests.get("http://rest.ensembl.org/info/species", headers={"Content-Type": "application/json"})
     if response.ok:
         data = response.json()
-        species = [specie['name'] for specie in data['species']]
+        species = [specie['display_name'] for specie in data['species']]
+        total_species = len(species)
         if limit:
             species = species[:int(limit)]
-        return species
+        return total_species, species
     else:
         print("Error connecting to the Ensembl database")
-
 
 class TestHandler(http.server.BaseHTTPRequestHandler):
 
@@ -43,12 +43,11 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
             filename = "species.html"
             if "limit" in arguments:
                 limit = arguments["limit"][-1]
-                species = list_species(limit)
+                total_species, species = list_species(limit)
             else:
-                species = list_species()
-            contents = read_html_file(filename).render(context={"species": species})  # Added closing parenthesis here
-
-
+                limit = None
+                total_species, species = list_species()
+            contents = read_html_file(filename).render(context={"total_species": total_species, "species": species, "limit": limit})
 
         self.send_response(200)
         self.send_header('Content-Type', 'html')
@@ -56,6 +55,8 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(contents.encode())
         return
+
+
 
 
 Handler = TestHandler

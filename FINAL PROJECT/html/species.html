@@ -5,13 +5,15 @@
     <title>List of Species</title>
   </head>
   <body style="background-color: lightgreen;">
-    <h1>List of Species</h1>
-    {% for specie in species %}
-    <p>{{ context.specie }}</p>
+  <p>The number of species in ensembl is : {{context.total_species}}</p>
+  <p>The limit you have chosen is : {{context.limit}}</p>
+    {% for specie in context.species %}
+    <p>{{ specie }}</p>
     {% endfor %}
-    <p><A HREF="/"> Go back to main menu</A></p>
+    <p><a href="/">Go back to main menu</a></p>
   </body>
 </html>
+
 
 
 
