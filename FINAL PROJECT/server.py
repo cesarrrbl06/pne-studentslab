@@ -9,10 +9,12 @@ from pathlib import Path
 PORT = 8080
 socketserver.TCPServer.allow_reuse_address = True
 
+
 def read_html_file(filename):
     contents = Path("html/" + filename).read_text()
     contents = j.Template(contents)
     return contents
+
 
 def list_species(limit=None):
     response = requests.get("http://rest.ensembl.org/info/species", headers={"Content-Type": "application/json"})
@@ -26,6 +28,7 @@ def list_species(limit=None):
     else:
         print("Error connecting to the Ensembl database")
 
+
 def karyotype_info(species):
     response = requests.get(f"http://rest.ensembl.org/info/assembly/{species}",
                             headers={"Content-Type": "application/json"})
@@ -35,6 +38,7 @@ def karyotype_info(species):
     else:
         print("Error connecting to the Ensembl database")
 
+
 def chrom_length(species, region):
     response = requests.get(f"http://rest.ensembl.org/info/assembly/{species}/{region}",
                             headers={"Content-Type": "application/json"})
@@ -43,6 +47,19 @@ def chrom_length(species, region):
         return data['length']
     else:
         print("Error connecting to the Ensembl database")
+
+
+def gene_find(display_name):
+    response = requests.get(f"https://rest.ensembl.org/lookup/symbol/human/{display_name}",
+                            headers={"Content-Type": "application/json"})
+    if response.ok:
+        data = response.json()
+        return data["id"]
+    else:
+        print("Error connecting to the Ensembl database")
+        return None
+
+
 
 class TestHandler(http.server.BaseHTTPRequestHandler):
 
@@ -85,7 +102,29 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                 species = None
                 chromosome = None
                 length = None
-            contents = read_html_file(filename).render(context={"species": species, "chromosome": chromosome, "length": length})
+            contents = read_html_file(filename).render(
+                context={"species": species, "chromosome": chromosome, "length": length})
+        elif path == "/geneSeq":
+            filename = "geneSeq.html"
+            if "gene" in arguments:
+                gene_symbol = arguments["gene"][0]
+                id = gene_find(gene_symbol)
+                if id:
+                    response = requests.get(f"https://rest.ensembl.org/sequence/id/{id}",
+                                            headers={"Content-Type": "application/json"})
+                    if response.ok:
+                        data = response.json()
+                        seq = data["seq"]
+                    else:
+                        print("Error connecting to the Ensembl database")
+                        seq = None
+                else:
+                    print(f"No gene found for symbol: {gene_symbol}")
+                    seq = None
+            else:
+                id = None
+                seq = None
+            contents = read_html_file(filename).render(context={"id": id, "seq": seq})
 
         self.send_response(200)
         self.send_header('Content-Type', 'html')

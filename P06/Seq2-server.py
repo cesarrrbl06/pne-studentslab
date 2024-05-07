@@ -70,7 +70,7 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                     filename = "error.html"
                     contents = read_html_file(filename).render(context={})
         elif path == "/gene":
-            filename = "gene.html"
+            filename = "geneSeq.html"
             if "name" in arguments:
                 name = arguments["name"][-1]
                 if name in genes:
