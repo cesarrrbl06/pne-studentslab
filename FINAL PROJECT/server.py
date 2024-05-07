@@ -125,6 +125,27 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                 id = None
                 seq = None
             contents = read_html_file(filename).render(context={"id": id, "seq": seq})
+        elif path == "/geneInfo":
+            filename = "geneInfo.html"
+            if "gene" in arguments:
+                gene_symbol = arguments["gene"][0]
+                id = gene_find(gene_symbol)
+                if id:
+                    response = requests.get(f"https://rest.ensembl.org/sequence/id/{id}",
+                                            headers={"Content-Type": "application/json"})
+                    if response.ok:
+                        data = response.json()
+                        seq = data["seq"]
+                    else:
+                        print("Error connecting to the Ensembl database")
+                        seq = None
+                else:
+                    print(f"No gene found for symbol: {gene_symbol}")
+                    seq = None
+            else:
+                id = None
+                seq = None
+            contents = read_html_file(filename).render(context={"id": id, "seq": seq})
 
         self.send_response(200)
         self.send_header('Content-Type', 'html')
