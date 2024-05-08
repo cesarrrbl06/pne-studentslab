@@ -60,6 +60,16 @@ def gene_find(display_name):
         return None
 
 
+def gene_info(display_name):
+    response = requests.get(f"https://rest.ensembl.org/lookup/symbol/human/{display_name}",
+                            headers={"Content-Type": "application/json"})
+    if response.ok:
+        data = response.json()
+        return data["id", "start", "end","length","assembly_name"]
+    else:
+        print("Error connecting to the Ensembl database")
+        return None
+
 
 class TestHandler(http.server.BaseHTTPRequestHandler):
 
@@ -129,24 +139,22 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
             filename = "geneInfo.html"
             if "gene" in arguments:
                 gene_symbol = arguments["gene"][0]
-                id = gene_find(gene_symbol)
-                if id:
-                    response = requests.get(f"https://rest.ensembl.org/sequence/id/{id}",
-                                            headers={"Content-Type": "application/json"})
-                    if response.ok:
-                        data = response.json()
-                        seq = data["seq"]
-                    else:
-                        print("Error connecting to the Ensembl database")
-                        seq = None
+                response = requests.get(f"https://rest.ensembl.org/lookup/symbol/human/{gene_symbol}",
+                                        headers={"Content-Type": "application/json"})
+                if response.ok:
+                    data = response.json()
+                    id = data.get("id")
+                    start = data.get("start")
+                    end = data.get("end")
+                    length = end - start + 1 if start and end else None
+                    assembly_name = data.get("assembly_name")
                 else:
-                    print(f"No gene found for symbol: {gene_symbol}")
-                    seq = None
+                    print("Error connecting to the Ensembl database")
+                    id = start = end = length = assembly_name = None
             else:
-                id = None
-                seq = None
-            contents = read_html_file(filename).render(context={"id": id, "seq": seq})
-        elif path == /geneInfo:
+                id = start = end = length = assembly_name = None
+            contents = read_html_file(filename).render(
+                context={"id": id, "start": start, "end": end, "length": length, "assembly_name": assembly_name})
 
         self.send_response(200)
         self.send_header('Content-Type', 'html')
