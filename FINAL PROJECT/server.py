@@ -146,6 +146,7 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                 id = None
                 seq = None
             contents = read_html_file(filename).render(context={"id": id, "seq": seq})
+        elif path == /geneInfo:
 
         self.send_response(200)
         self.send_header('Content-Type', 'html')
