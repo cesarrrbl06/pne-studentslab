@@ -70,6 +70,17 @@ def gene_info(display_name):
         print("Error connecting to the Ensembl database")
         return None
 
+def info_response(sequence):
+    base_counts = {'A': 0, 'T': 0, 'C': 0, 'G': 0}
+    total_bases = len(sequence)
+    for base in sequence:
+        if base in base_counts:
+            base_counts[base] += 1
+    percentages = {base: f"{round((count / total_bases) * 100, 2)}%" for base, count in base_counts.items()}
+    info = f"Sequence: {sequence}<br>Total length: {total_bases}<br>"
+    info += "<br>".join([f"{base}: {count} ({percentages[base]})" for base, count in base_counts.items()])
+    return info
+
 
 class TestHandler(http.server.BaseHTTPRequestHandler):
 
@@ -155,6 +166,32 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                 id = start = end = length = assembly_name = None
             contents = read_html_file(filename).render(
                 context={"id": id, "start": start, "end": end, "length": length, "assembly_name": assembly_name})
+        elif Path == "/geneCalc":
+            filename = "geneCalc.html"
+            if "gene" in arguments:
+                gene_symbol = arguments["gene"][0]
+                id = gene_find(gene_symbol)
+                if id:
+                    response = requests.get(f"https://rest.ensembl.org/sequence/id/{id}",
+                                            headers={"Content-Type": "application/json"})
+                    if response.ok:
+                        data = response.json()
+                        seq = data["seq"]
+                        info = info_response(seq)  # Assign the result to 'info'
+                    else:
+                        print("Error connecting to the Ensembl database")
+                        seq = None
+                        info = None
+                else:
+                    print(f"No gene found for symbol: {gene_symbol}")
+                    seq = None
+                    info = None
+            else:
+                id = None
+                seq = None
+                info = None
+            contents = read_html_file(filename).render(
+                context={"id": id, "seq": seq, "info": info})
 
         self.send_response(200)
         self.send_header('Content-Type', 'html')
