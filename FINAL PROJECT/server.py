@@ -194,7 +194,7 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                 seq = None
                 info = None
             contents = read_html_file(filename).render(
-                context={"id": id, "seq": seq, "info": info})
+                context={"id": id, "info": info})
 
         self.send_response(200)
         self.send_header('Content-Type', 'html')
