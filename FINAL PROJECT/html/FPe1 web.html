@@ -7,21 +7,19 @@
   <body>
   <h1>Browsing human and vertebrate genome </h1>
   <h2>BASIC Level Services</h2>
-  <p>1)List of species in the genome database</p>
+  <h2>1)List of species in the genome database</h2>
   <form action="/listSpecies" method="GET">
     Limit:
         <input type="text" name="limit">
         <input type="submit" value="SEND">
   </form>
-  <p>2)Information about the karyotype</p>
-  <hr>
+  <h2>2)Information about the karyotype</h2>
     <form action="/karyotype" method="GET">
     Select the species:
         <input type="text" name="species">
         <input type="submit" value="SEND">
   </form>
-  <hr>
-  <p>3)Chromosome length</p>
+  <h2>3)Chromosome length</h2>
     <form action="/chromosome" method="GET">
     Select the species:
         <input type="text" name="species">
@@ -32,24 +30,40 @@
     </form>
         <br>
         <hr>
-    Medium Level:
+  <h2>MEDIUM Level Services</h2>
+        <h2>Gene Seq</h2>
         <form action="/geneSeq" method="GET">
         Input a gene name:
         <input type="text" name="gene">
         <input type="submit" value="SEND">
         </form>
   <br>
+  <h2>Gene Info</h2>
   <form action="/geneInfo" method="GET">
         Input a gene name to get its info:
         <input type="text" name="gene">
         <input type="submit" value="SEND">
         </form>
   <br>
+  <h2>Gene Calc</h2>
   <form action="/geneCalc" method="GET">
         Input a gene name to get its info(Len and Bases):
         <input type="text" name="gene">
         <input type="submit" value="SEND">
   </form>
+  <h2>Gene List</h2>
+  <form action="/geneList" method="GET">
+    Input the chromosome:
+    <input type="text" name="chromo">
+    <br>
+    Input the start position:
+    <input type="text" name="start">
+    <br>
+    Input the end position:
+    <input type="text" name="end">
+    <br>
+    <input type="submit" value="SEND">
+</form>
   </body>
 </html>
 

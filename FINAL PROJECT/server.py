@@ -195,6 +195,26 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                 info = None
             contents = read_html_file(filename).render(
                 context={"id": id, "info": info})
+        elif path == "/geneList":
+            filename = "geneList.html"
+            if "chromo" in arguments and "start" in arguments and "end" in arguments:
+                chromo = arguments["chromo"][0]
+                start = arguments["start"][0]
+                end = arguments["end"][0]
+                response = requests.get(
+                    f"https://rest.ensembl.org/overlap/region/human/{chromo}:{start}-{end}?feature=gene",
+                    headers={"Content-Type": "application/json"})
+                if response.ok:
+                    data = response.json()
+                    gene_names = [result['external_name'] for result in data if 'external_name' in result]
+                    gene_names_str = ", ".join(gene_names)
+                else:
+                    print("Error connecting to the Ensembl database")
+                    gene_names_str = None
+            else:
+                chromo = start = end = gene_names_str = None
+            contents = read_html_file(filename).render(
+                context={"chromo": chromo, "start": start, "end": end, "gene_names": gene_names_str})
 
         self.send_response(200)
         self.send_header('Content-Type', 'html')
