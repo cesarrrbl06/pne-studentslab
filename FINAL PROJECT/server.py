@@ -166,17 +166,20 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                 id = start = end = length = assembly_name = None
             contents = read_html_file(filename).render(
                 context={"id": id, "start": start, "end": end, "length": length, "assembly_name": assembly_name})
-        elif Path == "/geneCalc":
+        elif path == "/geneCalc":
             filename = "geneCalc.html"
             if "gene" in arguments:
                 gene_symbol = arguments["gene"][0]
-                id = gene_find(gene_symbol)
-                if id:
-                    response = requests.get(f"https://rest.ensembl.org/sequence/id/{id}",
-                                            headers={"Content-Type": "application/json"})
-                    if response.ok:
-                        data = response.json()
-                        seq = data["seq"]
+                response = requests.get(f"https://rest.ensembl.org/lookup/symbol/human/{gene_symbol}",
+                                        headers={"Content-Type": "application/json"})
+                if response.ok:
+                    data = response.json()
+                    id = data.get("id")
+                    response_seq = requests.get(f"https://rest.ensembl.org/sequence/id/{id}",
+                                                headers={"Content-Type": "application/json"})
+                    if response_seq.ok:
+                        data_seq = response_seq.json()
+                        seq = data_seq["seq"]
                         info = info_response(seq)  # Assign the result to 'info'
                     else:
                         print("Error connecting to the Ensembl database")
