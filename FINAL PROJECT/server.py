@@ -6,7 +6,7 @@ import termcolor
 import requests
 from pathlib import Path
 import json
-import urllib.parse
+
 
 PORT = 8080
 socketserver.TCPServer.allow_reuse_address = True
