@@ -5,6 +5,7 @@ import jinja2 as j
 import termcolor
 import requests
 from pathlib import Path
+import json
 
 PORT = 8080
 socketserver.TCPServer.allow_reuse_address = True
@@ -65,10 +66,11 @@ def gene_info(display_name):
                             headers={"Content-Type": "application/json"})
     if response.ok:
         data = response.json()
-        return data["id", "start", "end","length","assembly_name"]
+        return data["id", "start", "end", "length", "assembly_name"]
     else:
         print("Error connecting to the Ensembl database")
         return None
+
 
 def info_response(sequence):
     base_counts = {'A': 0, 'T': 0, 'C': 0, 'G': 0}
@@ -89,32 +91,44 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
         url_path = urlparse(self.path)
         path = url_path.path
         arguments = parse_qs(url_path.query)
+        json_requested = 'json' in arguments and arguments['json'][-1] == '1'
 
         if path == "/":
-            filename = "FPe1 web.html"
-            contents = read_html_file(filename).render(context={})
+            if json_requested:
+                self.respond_json({"message": "Welcome to the Ensembl API server!"})
+            else:
+                filename = "FPe1 web.html"
+                contents = read_html_file(filename).render(context={})
+                self.respond_html(contents)
         elif path == "/listSpecies":
-            filename = "species.html"
             if "limit" in arguments:
                 limit = arguments["limit"][-1]
                 total_species, species = list_species(limit)
             else:
                 limit = None
                 total_species, species = list_species()
-            contents = read_html_file(filename).render(
-                context={"total_species": total_species, "species": species, "limit": limit})
+            if json_requested:
+                self.respond_json({"total_species": total_species, "species": species})
+            else:
+                filename = "species.html"
+                contents = read_html_file(filename).render(
+                    context={"total_species": total_species, "species": species, "limit": limit})
+                self.respond_html(contents)
         elif path == "/karyotype":
-            filename = "karyotype.html"
             if "species" in arguments:
                 species = arguments["species"][-1]
                 karyotype = karyotype_info(species)
             else:
                 species = None
                 karyotype = []
-            contents = read_html_file(filename).render(
-                context={"species": species, "karyotype": karyotype})
+            if json_requested:
+                self.respond_json({"species": species, "karyotype": karyotype})
+            else:
+                filename = "karyotype.html"
+                contents = read_html_file(filename).render(
+                    context={"species": species, "karyotype": karyotype})
+                self.respond_html(contents)
         elif path == "/chromosome":
-            filename = "chromosomelen.html"
             if "species" in arguments and "chromosome" in arguments:
                 species = arguments["species"][-1]
                 chromosome = arguments["chromosome"][-1]
@@ -123,10 +137,14 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                 species = None
                 chromosome = None
                 length = None
-            contents = read_html_file(filename).render(
-                context={"species": species, "chromosome": chromosome, "length": length})
+            if json_requested:
+                self.respond_json({"species": species, "chromosome": chromosome, "length": length})
+            else:
+                filename = "chromosomelen.html"
+                contents = read_html_file(filename).render(
+                    context={"species": species, "chromosome": chromosome, "length": length})
+                self.respond_html(contents)
         elif path == "/geneSeq":
-            filename = "geneSeq.html"
             if "gene" in arguments:
                 gene_symbol = arguments["gene"][0]
                 id = gene_find(gene_symbol)
@@ -145,9 +163,13 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
             else:
                 id = None
                 seq = None
-            contents = read_html_file(filename).render(context={"id": id, "seq": seq})
+            if json_requested:
+                self.respond_json({"id": id, "seq": seq})
+            else:
+                filename = "geneSeq.html"
+                contents = read_html_file(filename).render(context={"id": id, "seq": seq})
+                self.respond_html(contents)
         elif path == "/geneInfo":
-            filename = "geneInfo.html"
             if "gene" in arguments:
                 gene_symbol = arguments["gene"][0]
                 response = requests.get(f"https://rest.ensembl.org/lookup/symbol/human/{gene_symbol}",
@@ -164,10 +186,14 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                     id = start = end = length = assembly_name = None
             else:
                 id = start = end = length = assembly_name = None
-            contents = read_html_file(filename).render(
-                context={"id": id, "start": start, "end": end, "length": length, "assembly_name": assembly_name})
+            if json_requested:
+                self.respond_json({"id": id, "start": start, "end": end, "length": length, "assembly_name": assembly_name})
+            else:
+                filename = "geneInfo.html"
+                contents = read_html_file(filename).render(
+                    context={"id": id, "start": start, "end": end, "length": length, "assembly_name": assembly_name})
+                self.respond_html(contents)
         elif path == "/geneCalc":
-            filename = "geneCalc.html"
             if "gene" in arguments:
                 gene_symbol = arguments["gene"][0]
                 response = requests.get(f"https://rest.ensembl.org/lookup/symbol/human/{gene_symbol}",
@@ -193,10 +219,14 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                 id = None
                 seq = None
                 info = None
-            contents = read_html_file(filename).render(
-                context={"id": id, "info": info})
+            if json_requested:
+                self.respond_json({"id": id, "info": info})
+            else:
+                filename = "geneCalc.html"
+                contents = read_html_file(filename).render(
+                    context={"id": id, "info": info})
+                self.respond_html(contents)
         elif path == "/geneList":
-            filename = "geneList.html"
             if "chromo" in arguments and "start" in arguments and "end" in arguments:
                 chromo = arguments["chromo"][0]
                 start = arguments["start"][0]
@@ -213,15 +243,32 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                     gene_names_str = None
             else:
                 chromo = start = end = gene_names_str = None
-            contents = read_html_file(filename).render(
-                context={"chromo": chromo, "start": start, "end": end, "gene_names": gene_names_str})
+            if json_requested:
+                self.respond_json({"chromo": chromo, "start": start, "end": end, "gene_names": gene_names_str})
+            else:
+                filename = "geneList.html"
+                contents = read_html_file(filename).render(
+                    context={"chromo": chromo, "start": start, "end": end, "gene_names": gene_names_str})
 
+                self.respond_html(contents)
+        else:
+            self.send_error(404, "Not Found")
+            return
+
+    def respond_html(self, contents):
         self.send_response(200)
-        self.send_header('Content-Type', 'html')
+        self.send_header('Content-Type', 'text/html')
         self.send_header('Content-Length', len(contents.encode()))
         self.end_headers()
         self.wfile.write(contents.encode())
-        return
+
+    def respond_json(self, data):
+        self.send_response(200)
+        self.send_header('Content-Type', 'application/json')
+        json_data = json.dumps(data)
+        self.send_header('Content-Length', len(json_data))
+        self.end_headers()
+        self.wfile.write(json_data.encode())
 
 
 Handler = TestHandler
