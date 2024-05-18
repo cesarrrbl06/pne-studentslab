@@ -21,7 +21,7 @@ def list_species(limit=None):
     response = requests.get("http://rest.ensembl.org/info/species", headers={"Content-Type": "application/json"})
     if response.ok:
         data = response.json()
-        species = [specie['display_name'] for specie in data['species']]
+        species = [(specie['display_name']) for specie in data['species']]
         total_species = len(species)
         if limit:
             species = species[:int(limit)]
@@ -30,7 +30,28 @@ def list_species(limit=None):
         print("Error connecting to the Ensembl database")
 
 
-def karyotype_info(species):
+def get_scientific_name(common_name):
+    response = requests.get("http://rest.ensembl.org/info/species", headers={"Content-Type": "application/json"})
+    if response.ok:
+        data = response.json()
+        for species in data['species']:
+            if species['display_name'].lower() == common_name.lower():
+                return species['name']
+    print("Error connecting to the Ensembl database")
+    return None
+
+
+def handle_plus_in_species_name(species):
+    return species.replace(" ", "+")
+
+
+def karyotype_info(species_name):
+    common_name = species_name.replace("+", " ")
+    species = get_scientific_name(common_name)
+    if species is None:
+        print(f"Species {common_name} not found in Ensembl.")
+        return None
+    species = species.replace(" ", "+")  # replace spaces with '+' in the species name
     response = requests.get(f"http://rest.ensembl.org/info/assembly/{species}",
                             headers={"Content-Type": "application/json"})
     if response.ok:
@@ -38,6 +59,8 @@ def karyotype_info(species):
         return data['karyotype']
     else:
         print("Error connecting to the Ensembl database")
+        return None
+
 
 
 def chrom_length(species, region):
@@ -103,6 +126,12 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
         elif path == "/listSpecies":
             if "limit" in arguments:
                 limit = arguments["limit"][-1]
+                if not limit.isdigit() or int(limit) < 1 or int(limit) > 324:
+                    print("Limit not valid. It should be a number between 1 and 324.")
+                    filename = "error.html"
+                    contents = read_html_file(filename).render(context={})
+                    self.respond_html(contents)
+                    return
                 total_species, species = list_species(limit)
             else:
                 limit = None
@@ -118,9 +147,12 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
             if "species" in arguments:
                 species = arguments["species"][-1]
                 karyotype = karyotype_info(species)
-            else:
-                species = None
-                karyotype = []
+                if not karyotype:
+                    error_message = f"Species {species} not found in Ensembl."
+                    filename = "error.html"
+                    contents = read_html_file(filename).render(context={"error": error_message})
+                    self.respond_html(contents)
+                    return
             if json_requested:
                 self.respond_json({"species": species, "karyotype": karyotype})
             else:
@@ -133,6 +165,12 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                 species = arguments["species"][-1]
                 chromosome = arguments["chromosome"][-1]
                 length = chrom_length(species, chromosome)
+                if length is None:  # If the species or chromosome does not exist in Ensembl
+                    error_message = f"Species {species} or chromosome {chromosome} not found in Ensembl."
+                    filename = "error.html"
+                    contents = read_html_file(filename).render(context={"error": error_message})
+                    self.respond_html(contents)
+                    return
             else:
                 species = None
                 chromosome = None
@@ -144,6 +182,9 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                 contents = read_html_file(filename).render(
                     context={"species": species, "chromosome": chromosome, "length": length})
                 self.respond_html(contents)
+
+
+
         elif path == "/geneSeq":
             if "gene" in arguments:
                 gene_symbol = arguments["gene"][0]
@@ -159,7 +200,9 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                         seq = None
                 else:
                     print(f"No gene found for symbol: {gene_symbol}")
-                    seq = None
+                    filename = "error.html"
+                    contents = read_html_file(filename).render(context={})
+                    self.respond_html(contents)
             else:
                 id = None
                 seq = None
@@ -182,12 +225,15 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                     length = end - start + 1 if start and end else None
                     assembly_name = data.get("assembly_name")
                 else:
-                    print("Error connecting to the Ensembl database")
-                    id = start = end = length = assembly_name = None
+                    print(f"No gene found for symbol: {gene_symbol}")
+                    filename = "error.html"
+                    contents = read_html_file(filename).render(context={})
+                    self.respond_html(contents)
             else:
                 id = start = end = length = assembly_name = None
             if json_requested:
-                self.respond_json({"id": id, "start": start, "end": end, "length": length, "assembly_name": assembly_name})
+                self.respond_json(
+                    {"id": id, "start": start, "end": end, "length": length, "assembly_name": assembly_name})
             else:
                 filename = "geneInfo.html"
                 contents = read_html_file(filename).render(
@@ -213,8 +259,9 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                         info = None
                 else:
                     print(f"No gene found for symbol: {gene_symbol}")
-                    seq = None
-                    info = None
+                    filename = "error.html"
+                    contents = read_html_file(filename).render(context={})
+                    self.respond_html(contents)
             else:
                 id = None
                 seq = None
@@ -231,6 +278,18 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                 chromo = arguments["chromo"][0]
                 start = arguments["start"][0]
                 end = arguments["end"][0]
+
+                # Add a list of valid chromosomes
+                valid_chromosomes = [str(i) for i in range(1, 23)] + ['X', 'Y', 'MT']
+
+                # Check if the entered chromosome is valid
+                if chromo not in valid_chromosomes:
+                    print(f"Invalid chromosome: {chromo}. Please enter a valid chromosome.")
+                    filename = "error.html"
+                    contents = read_html_file(filename).render(context={})
+                    self.respond_html(contents)
+                    return  # Make sure to return after responding
+
                 response = requests.get(
                     f"https://rest.ensembl.org/overlap/region/human/{chromo}:{start}-{end}?feature=gene",
                     headers={"Content-Type": "application/json"})
@@ -242,18 +301,19 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                     print("Error connecting to the Ensembl database")
                     gene_names_str = None
             else:
-                chromo = start = end = gene_names_str = None
+                chromo = None
+                print(f"No chromosome found for: {chromo}")
+                filename = "error.html"
+                contents = read_html_file(filename).render(context={})
+                self.respond_html(contents)
+                return
             if json_requested:
                 self.respond_json({"chromo": chromo, "start": start, "end": end, "gene_names": gene_names_str})
             else:
                 filename = "geneList.html"
                 contents = read_html_file(filename).render(
                     context={"chromo": chromo, "start": start, "end": end, "gene_names": gene_names_str})
-
                 self.respond_html(contents)
-        else:
-            self.send_error(404, "Not Found")
-            return
 
     def respond_html(self, contents):
         self.send_response(200)
