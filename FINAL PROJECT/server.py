@@ -6,6 +6,7 @@ import termcolor
 import requests
 from pathlib import Path
 import json
+import urllib.parse
 
 PORT = 8080
 socketserver.TCPServer.allow_reuse_address = True
@@ -41,17 +42,13 @@ def get_scientific_name(common_name):
     return None
 
 
-def handle_plus_in_species_name(species):
-    return species.replace(" ", "+")
-
-
 def karyotype_info(species_name):
+    # Replace '+' signs with spaces to handle decoding
     common_name = species_name.replace("+", " ")
     species = get_scientific_name(common_name)
     if species is None:
         print(f"Species {common_name} not found in Ensembl.")
         return None
-    species = species.replace(" ", "+")  # replace spaces with '+' in the species name
     response = requests.get(f"http://rest.ensembl.org/info/assembly/{species}",
                             headers={"Content-Type": "application/json"})
     if response.ok:
@@ -60,7 +57,6 @@ def karyotype_info(species_name):
     else:
         print("Error connecting to the Ensembl database")
         return None
-
 
 
 def chrom_length(species, region):
@@ -143,23 +139,27 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                 contents = read_html_file(filename).render(
                     context={"total_species": total_species, "species": species, "limit": limit})
                 self.respond_html(contents)
-        elif path == "/karyotype":
-            if "species" in arguments:
-                species = arguments["species"][-1]
-                karyotype = karyotype_info(species)
-                if not karyotype:
-                    error_message = f"Species {species} not found in Ensembl."
+        if path == "/karyotype" and "species" in arguments:
+            species_name = arguments["species"][-1]
+            karyotype = karyotype_info(species_name)
+            if karyotype is not None:
+                if json_requested:
+                    self.respond_json({"species": species_name, "karyotype": karyotype})
+                else:
+                    filename = "karyotype.html"
+                    contents = read_html_file(filename).render(
+                        context={"species": species_name, "karyotype": karyotype})
+                    self.respond_html(contents)
+                return
+            else:
+                error_message = f"Species {species_name} not found in Ensembl."
+                if json_requested:
+                    self.respond_json({"error": error_message})
+                else:
                     filename = "error.html"
                     contents = read_html_file(filename).render(context={"error": error_message})
                     self.respond_html(contents)
-                    return
-            if json_requested:
-                self.respond_json({"species": species, "karyotype": karyotype})
-            else:
-                filename = "karyotype.html"
-                contents = read_html_file(filename).render(
-                    context={"species": species, "karyotype": karyotype})
-                self.respond_html(contents)
+                return
         elif path == "/chromosome":
             if "species" in arguments and "chromosome" in arguments:
                 species = arguments["species"][-1]
