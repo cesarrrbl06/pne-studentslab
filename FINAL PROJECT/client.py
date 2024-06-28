@@ -1,5 +1,6 @@
 import requests
 
+
 def print_response(response):
     if response.ok:
         data = response.json()
@@ -7,6 +8,7 @@ def print_response(response):
             print(f"{key}: {value}")
     else:
         print(f"Error: {response.status_code}")
+
 
 def main():
     base_url = "http://localhost:8080"
@@ -38,7 +40,8 @@ def main():
         elif choice == '4':
             species = input("Enter the species name: ")
             chromosome = input("Enter the chromosome: ")
-            response = requests.get(f"{base_url}/chromosome", params={'species': species, 'chromosome': chromosome, 'json': '1'})
+            response = requests.get(f"{base_url}/chromosome",
+                                    params={'species': species, 'chromosome': chromosome, 'json': '1'})
             print_response(response)
         elif choice == '5':
             gene = input("Enter the gene symbol: ")
@@ -56,12 +59,14 @@ def main():
             chromo = input("Enter the chromosome: ")
             start = input("Enter the start position: ")
             end = input("Enter the end position: ")
-            response = requests.get(f"{base_url}/geneList", params={'chromo': chromo, 'start': start, 'end': end, 'json': '1'})
+            response = requests.get(f"{base_url}/geneList",
+                                    params={'chromo': chromo, 'start': start, 'end': end, 'json': '1'})
             print_response(response)
         elif choice == '9':
             break
         else:
             print("Invalid choice. Please try again.")
+
 
 if __name__ == "__main__":
     main()

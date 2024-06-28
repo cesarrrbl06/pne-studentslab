@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<body>
+<h1>Gene Sequence Information</h1>
+
+<form action="/sequence" method="post">
+  <label for="sequence">Sequence:</label><br>
+  <textarea id="sequence" name="sequence" rows="4" cols="50">{{context.sequence}}</textarea><br>
+</form>
+
+<p>{{context.info}}</p>
+<p>Gene ID:{{context.id}}</p>
+</body>
+</html>
